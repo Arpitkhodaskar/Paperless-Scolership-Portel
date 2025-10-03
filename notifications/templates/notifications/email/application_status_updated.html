@@ -1,0 +1,112 @@
+{% extends "notifications/email/base.html" %}
+
+{% block header_title %}Application Status Update{% endblock %}
+
+{% block header_message %}Your application status has been updated{% endblock %}
+
+{% block content %}
+<h2>Dear {{ student_name }},</h2>
+
+<div class="highlight-box">
+    <h3>Status Update</h3>
+    <table class="details-table">
+        <tr>
+            <th>Application ID:</th>
+            <td><strong>{{ application_id }}</strong></td>
+        </tr>
+        <tr>
+            <th>Previous Status:</th>
+            <td>{{ previous_status }}</td>
+        </tr>
+        <tr>
+            <th>Current Status:</th>
+            <td>
+                <span class="status-badge {% if status == 'approved' %}status-approved{% elif status == 'rejected' %}status-rejected{% else %}status-pending{% endif %}">
+                    {{ status|upper }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Updated On:</th>
+            <td>{{ updated_date }}</td>
+        </tr>
+    </table>
+</div>
+
+{% if status == 'under_review' %}
+<div class="alert alert-info">
+    <strong>Under Review:</strong> Your application is currently being reviewed by our evaluation team. We'll notify you once the review is complete.
+</div>
+
+<h3>Review Process:</h3>
+<ul>
+    <li>Document verification in progress</li>
+    <li>Eligibility criteria assessment</li>
+    <li>Merit evaluation</li>
+    <li>Final committee review</li>
+</ul>
+
+{% elif status == 'documents_required' %}
+<div class="alert alert-warning">
+    <strong>Action Required:</strong> Additional documents are needed to process your application.
+</div>
+
+<h3>Required Documents:</h3>
+<ul>
+    {% for doc in required_documents %}
+    <li>{{ doc }}</li>
+    {% endfor %}
+</ul>
+
+<p><strong>Deadline:</strong> Please submit the required documents by {{ document_deadline }}</p>
+
+{% elif status == 'approved' %}
+<div class="alert alert-success">
+    <strong>Congratulations!</strong> Your scholarship application has been approved.
+</div>
+
+<h3>Next Steps:</h3>
+<ul>
+    <li>Scholarship amount: <strong>₹{{ scholarship_amount }}</strong></li>
+    <li>Disbursement will begin as per schedule</li>
+    <li>Accept the scholarship offer in your portal</li>
+    <li>Submit required acceptance documents</li>
+</ul>
+
+{% elif status == 'rejected' %}
+<div class="alert alert-danger">
+    <strong>Application Status:</strong> Unfortunately, your application has not been approved at this time.
+</div>
+
+<h3>Reason for Rejection:</h3>
+<p>{{ rejection_reason|default:"Please contact support for detailed feedback." }}</p>
+
+<h3>What you can do:</h3>
+<ul>
+    <li>Review eligibility criteria for future applications</li>
+    <li>Contact support for detailed feedback</li>
+    <li>Apply for other available scholarships</li>
+    <li>Reapply in the next cycle if eligible</li>
+</ul>
+{% endif %}
+
+{% if comments %}
+<div class="highlight-box">
+    <h3>Comments from Review Team:</h3>
+    <p>{{ comments }}</p>
+</div>
+{% endif %}
+
+<a href="{{ portal_url }}" class="button">View Application Details</a>
+
+{% if status == 'approved' %}
+<p>We're excited to support your educational journey. Congratulations once again!</p>
+{% elif status == 'rejected' %}
+<p>We encourage you to explore other opportunities and wish you success in your educational pursuits.</p>
+{% else %}
+<p>We appreciate your patience during the review process.</p>
+{% endif %}
+
+<p>Best regards,<br>
+<strong>Scholarship Review Team</strong></p>
+{% endblock %}

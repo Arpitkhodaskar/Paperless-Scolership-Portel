@@ -1,0 +1,132 @@
+{% extends "notifications/email/base.html" %}
+
+{% block header_title %}Payment Update{% endblock %}
+
+{% block header_message %}Payment status notification{% endblock %}
+
+{% block content %}
+<h2>Dear {{ student_name }},</h2>
+
+<div class="highlight-box">
+    <h3>Payment Details</h3>
+    <table class="details-table">
+        <tr>
+            <th>Payment ID:</th>
+            <td><strong>{{ payment_id }}</strong></td>
+        </tr>
+        <tr>
+            <th>Application ID:</th>
+            <td>{{ application_id }}</td>
+        </tr>
+        <tr>
+            <th>Payment Type:</th>
+            <td>{{ payment_type }}</td>
+        </tr>
+        <tr>
+            <th>Amount:</th>
+            <td><strong>₹{{ amount }}</strong></td>
+        </tr>
+        <tr>
+            <th>Status:</th>
+            <td>
+                <span class="status-badge {% if status == 'completed' or status == 'processed' %}status-approved{% elif status == 'failed' or status == 'cancelled' %}status-rejected{% else %}status-pending{% endif %}">
+                    {{ status|upper }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Date:</th>
+            <td>{{ payment_date }}</td>
+        </tr>
+        {% if transaction_id %}
+        <tr>
+            <th>Transaction ID:</th>
+            <td>{{ transaction_id }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+{% if status == 'completed' or status == 'processed' %}
+<div class="alert alert-success">
+    <strong>Payment Successful!</strong> Your payment has been processed successfully.
+</div>
+
+<h3>Payment Confirmation:</h3>
+<ul>
+    <li>Payment has been credited to your account</li>
+    <li>Receipt has been generated</li>
+    <li>Your application/scholarship status may be updated accordingly</li>
+    <li>Keep this email as proof of payment</li>
+</ul>
+
+{% elif status == 'pending' %}
+<div class="alert alert-info">
+    <strong>Payment Processing:</strong> Your payment is currently being processed.
+</div>
+
+<p>This may take 2-3 business days to complete. You'll receive a confirmation once the payment is processed.</p>
+
+{% elif status == 'failed' %}
+<div class="alert alert-danger">
+    <strong>Payment Failed:</strong> Unfortunately, your payment could not be processed.
+</div>
+
+<h3>Possible Reasons:</h3>
+<ul>
+    <li>Insufficient funds in the account</li>
+    <li>Bank server issues</li>
+    <li>Incorrect payment details</li>
+    <li>Network connectivity issues</li>
+</ul>
+
+<h3>What to do next:</h3>
+<ul>
+    <li>Check your account balance</li>
+    <li>Verify payment details</li>
+    <li>Try again after some time</li>
+    <li>Contact your bank if issues persist</li>
+    <li>Contact our support team for assistance</li>
+</ul>
+
+{% elif status == 'refunded' %}
+<div class="alert alert-info">
+    <strong>Payment Refunded:</strong> Your payment has been refunded to your original payment method.
+</div>
+
+<h3>Refund Details:</h3>
+<ul>
+    <li>Refund Amount: ₹{{ refund_amount|default:amount }}</li>
+    <li>Refund will reflect in 3-7 business days</li>
+    <li>Refund reason: {{ refund_reason|default:"As per your request" }}</li>
+</ul>
+
+{% elif status == 'cancelled' %}
+<div class="alert alert-warning">
+    <strong>Payment Cancelled:</strong> This payment has been cancelled.
+</div>
+
+<p>{{ cancellation_reason|default:"The payment was cancelled as per your request." }}</p>
+{% endif %}
+
+{% if payment_method %}
+<div class="highlight-box">
+    <h3>Payment Method:</h3>
+    <p>{{ payment_method }}</p>
+    {% if bank_reference %}
+    <p><strong>Bank Reference:</strong> {{ bank_reference }}</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<a href="{{ portal_url }}" class="button">View Payment History</a>
+
+{% if status == 'completed' or status == 'processed' %}
+<p>Thank you for your payment. If you have any questions, please don't hesitate to contact us.</p>
+{% else %}
+<p>If you have any questions about this payment, please contact our support team.</p>
+{% endif %}
+
+<p>Best regards,<br>
+<strong>Payment Processing Team</strong></p>
+{% endblock %}

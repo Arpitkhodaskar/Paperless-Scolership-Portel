@@ -1,0 +1,18 @@
+{% block header %}
+SCHOLARSHIP PORTAL
+==================
+{% block header_message %}Important notification regarding your account{% endblock %}
+{% endblock %}
+
+{% block content %}
+<!-- Content will be filled by child templates -->
+{% endblock %}
+
+{% block footer %}
+---
+Scholarship Portal
+This is an automated email. Please do not reply to this email.
+If you have any questions, please contact our support team.
+
+If you no longer wish to receive these emails, you can unsubscribe here: {{ unsubscribe_url|default:'Contact support' }}
+{% endblock %}

@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/auth/', include('authentication.urls')),
     path('api/students/', include('students.urls')),
     path('api/institutes/', include('institutes.urls')),
+    path('api/institutes/', include('institutes.institute_urls')),  # Institute Module APIs
     path('api/departments/', include('departments.urls')),
     path('api/finance/', include('finance.urls')),
     path('api/grievances/', include('grievances.urls')),

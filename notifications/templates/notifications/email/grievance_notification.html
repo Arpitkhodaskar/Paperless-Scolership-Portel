@@ -1,0 +1,153 @@
+{% extends "notifications/email/base.html" %}
+
+{% block header_title %}Grievance Update{% endblock %}
+
+{% block header_message %}Update on your support ticket{% endblock %}
+
+{% block content %}
+<h2>Dear {{ student_name }},</h2>
+
+<div class="highlight-box">
+    <h3>Grievance Details</h3>
+    <table class="details-table">
+        <tr>
+            <th>Ticket ID:</th>
+            <td><strong>{{ grievance_id }}</strong></td>
+        </tr>
+        <tr>
+            <th>Subject:</th>
+            <td>{{ subject }}</td>
+        </tr>
+        <tr>
+            <th>Category:</th>
+            <td>{{ category }}</td>
+        </tr>
+        <tr>
+            <th>Priority:</th>
+            <td>
+                <span class="status-badge {% if priority == 'high' %}status-rejected{% elif priority == 'medium' %}status-pending{% else %}status-approved{% endif %}">
+                    {{ priority|upper }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Status:</th>
+            <td>
+                <span class="status-badge {% if status == 'resolved' or status == 'closed' %}status-approved{% elif status == 'in_progress' %}status-pending{% else %}status-submitted{% endif %}">
+                    {{ status|upper }}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th>Submitted:</th>
+            <td>{{ submitted_date }}</td>
+        </tr>
+        <tr>
+            <th>Last Updated:</th>
+            <td>{{ updated_date }}</td>
+        </tr>
+        {% if assigned_to %}
+        <tr>
+            <th>Assigned To:</th>
+            <td>{{ assigned_to }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+{% if notification_type == 'status_update' %}
+<div class="alert {% if status == 'resolved' %}alert-success{% elif status == 'in_progress' %}alert-info{% else %}alert-warning{% endif %}">
+    <strong>Status Update:</strong> Your grievance status has been updated to <strong>{{ status|upper }}</strong>.
+</div>
+
+{% elif notification_type == 'new_comment' %}
+<div class="alert alert-info">
+    <strong>New Response:</strong> Our support team has added a response to your grievance.
+</div>
+
+{% elif notification_type == 'assignment' %}
+<div class="alert alert-info">
+    <strong>Assignment Update:</strong> Your grievance has been assigned to {{ assigned_to }} for resolution.
+</div>
+
+{% elif notification_type == 'escalation' %}
+<div class="alert alert-warning">
+    <strong>Escalated:</strong> Your grievance has been escalated to {{ escalated_to }} for priority handling.
+</div>
+
+{% elif notification_type == 'resolution' %}
+<div class="alert alert-success">
+    <strong>Resolved:</strong> Your grievance has been resolved by our support team.
+</div>
+
+{% elif notification_type == 'feedback_request' %}
+<div class="alert alert-info">
+    <strong>Feedback Request:</strong> Please provide your feedback on the resolution of your grievance.
+</div>
+{% endif %}
+
+{% if latest_comment %}
+<div class="highlight-box">
+    <h3>Latest Response:</h3>
+    <p><strong>From:</strong> {{ comment_author|default:"Support Team" }}</p>
+    <p><strong>Date:</strong> {{ comment_date }}</p>
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0;">
+        {{ latest_comment|linebreaks }}
+    </div>
+</div>
+{% endif %}
+
+{% if status == 'resolved' %}
+<h3>Resolution Summary:</h3>
+{% if resolution_summary %}
+<div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0;">
+    {{ resolution_summary|linebreaks }}
+</div>
+{% endif %}
+
+<div class="alert alert-success">
+    <strong>What's Next:</strong> Your grievance has been resolved. If you're satisfied with the resolution, no further action is needed. If you need additional assistance, you can reopen this ticket or create a new one.
+</div>
+
+{% elif status == 'in_progress' %}
+<div class="alert alert-info">
+    <strong>In Progress:</strong> Our team is actively working on your grievance. We'll keep you updated on the progress.
+</div>
+
+{% if expected_resolution_date %}
+<p><strong>Expected Resolution:</strong> {{ expected_resolution_date }}</p>
+{% endif %}
+
+{% elif status == 'pending' %}
+<div class="alert alert-warning">
+    <strong>Pending Review:</strong> Your grievance is in queue for review. We'll assign it to a support specialist soon.
+</div>
+{% endif %}
+
+<a href="{{ grievance_url }}" class="button">View Grievance Details</a>
+
+{% if status == 'resolved' and notification_type == 'resolution' %}
+<div style="text-align: center; margin: 30px 0;">
+    <h3>How was our service?</h3>
+    <p>Please rate your experience with our support:</p>
+    <a href="{{ feedback_url }}&rating=5" style="background: #28a745; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; margin: 0 5px;">Excellent</a>
+    <a href="{{ feedback_url }}&rating=4" style="background: #6f42c1; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; margin: 0 5px;">Good</a>
+    <a href="{{ feedback_url }}&rating=3" style="background: #fd7e14; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; margin: 0 5px;">Average</a>
+    <a href="{{ feedback_url }}&rating=2" style="background: #e83e8c; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; margin: 0 5px;">Poor</a>
+    <a href="{{ feedback_url }}&rating=1" style="background: #dc3545; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; margin: 0 5px;">Very Poor</a>
+</div>
+{% endif %}
+
+<h3>Need More Help?</h3>
+<ul>
+    <li>Reply to this email to add a comment to your grievance</li>
+    <li>Visit our <a href="{{ faq_url }}" style="color: #667eea;">FAQ section</a> for quick answers</li>
+    <li>Create a new ticket if you have a different issue</li>
+    <li>Contact us directly if urgent</li>
+</ul>
+
+<p>Thank you for your patience. We're committed to resolving your concerns quickly and effectively.</p>
+
+<p>Best regards,<br>
+<strong>Customer Support Team</strong></p>
+{% endblock %}
